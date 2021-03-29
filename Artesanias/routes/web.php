@@ -29,3 +29,7 @@ Route::get('/producto/{id}', function ($id) {
     return view('verproducto')
     -> with ('id' , $id);
 });
+
+Route::get('/practica', function(){
+    return view('prac');
+});
