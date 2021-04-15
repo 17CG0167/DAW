@@ -9,10 +9,10 @@ Route::group(['prefix'=>'admin','as'=>'admin.'], function(){
     Route::get('/usuarios', function () {
         return view('admin.layouts.users');
     });
-    Route::get('/productos', [App\Http\Controllers\Admin\ProductosController::class,'index']);
+   // Route::get('/productos', [App\Http\Controllers\Admin\ProductosController::class,'index']);
 
-
-    Route::resource('productos', App\Http\Controllers\Admin\ProductosController::class);
+    Route::get('/productos', 'Admin\ProductosController@index');
+    Route::resource('productos', 'Admin\ProductosController');
 
 });
 

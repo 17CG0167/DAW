@@ -14,7 +14,7 @@ class ProductosController extends Controller
      */
     public function index()
     {
-        dd('funciona');
+     
         return view('admin.layouts.productos');
     }
 
