@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Validator;
+use App\Models\Product;
 class ProductosController extends Controller
 {
     /**
@@ -34,9 +35,36 @@ class ProductosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        dd("hi");
+    public function store(Request $request){
+       $validator= Validator::make($request->all(),[
+            'nombe'=>'required|max:255|min:1',
+            'precio'=>'required|max:255|min:1|numeric',
+            'stock'=>'required|max:255|min:1|numeric',
+            'descripcion'=>'required|max:255|min:1|',
+            'imagen'=>'required|image|mimes:jpg,jpeg,png,gif,svg|max:2048',
+
+       ]);
+       if($validator->fails()){
+           return back() 
+               ->withInput()
+               ->with('error','llenalos bien')
+               ->withErrors('llenalos bien');   
+       }else{
+           $imagen =$request->file('imagen');
+           $nombre=time.'.'.$imagen->getClientOriginalExtension();
+           $destino = public_path('img/productos');
+           $request->imagen->move('$destino'.'/'.$nombre);
+           $producto = Product::create([
+                'name'=>$request->nombre,
+                'description'=>$request->descripcion,
+                'stock'=>$request->stock,
+                'price'=>$request->precio,
+                'image'=>$request->imagen,
+                'slud'=>'',
+           ]);
+           $producto->save();
+           return back()->with('Listo','Se ha insertado correctamente');
+       }
     }
 
     /**
