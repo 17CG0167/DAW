@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
-use App\Models\Product;
+use App\Product;
+use File;
 class ProductosController extends Controller
 {
     /**
@@ -16,7 +17,13 @@ class ProductosController extends Controller
     public function index()
     {
      
-        return view('admin.layouts.productos');
+        $datos=\DB::table('products')
+            ->select('products.*')
+            ->orderBy('id','DESC')
+            ->get();
+
+        return view('admin.layouts.productos')
+            ->with('productos',$datos);
     }
 
     /**
@@ -37,7 +44,7 @@ class ProductosController extends Controller
      */
     public function store(Request $request){
        $validator= Validator::make($request->all(),[
-            'nombe'=>'required|max:255|min:1',
+            'nombre'=>'required|max:255|min:1',
             'precio'=>'required|max:255|min:1|numeric',
             'stock'=>'required|max:255|min:1|numeric',
             'descripcion'=>'required|max:255|min:1|',
@@ -48,19 +55,19 @@ class ProductosController extends Controller
            return back() 
                ->withInput()
                ->with('error','llenalos bien')
-               ->withErrors('llenalos bien');   
+               ->withErrors($validator);   
        }else{
            $imagen =$request->file('imagen');
-           $nombre=time.'.'.$imagen->getClientOriginalExtension();
+           $nombre=time().'.'.$imagen->getClientOriginalExtension();
            $destino = public_path('img/productos');
-           $request->imagen->move('$destino'.'/'.$nombre);
+           $request->imagen->move($destino, $nombre);
            $producto = Product::create([
                 'name'=>$request->nombre,
                 'description'=>$request->descripcion,
                 'stock'=>$request->stock,
                 'price'=>$request->precio,
                 'image'=>$request->imagen,
-                'slud'=>'',
+                'slug'=>'',
            ]);
            $producto->save();
            return back()->with('Listo','Se ha insertado correctamente');
@@ -109,6 +116,11 @@ class ProductosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $producto =Product::find($id);
+        if(File::exists(public_path('img/productos/'.$producto->imagen))){
+            unlink(public_path('img/productos/'.$producto->imagen));
+        }
+        $producto->delete();
+        return back()->with('Listo','Se ha eliminado correctamente');
     }
 }
