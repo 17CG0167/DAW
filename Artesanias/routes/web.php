@@ -12,6 +12,7 @@ Route::group(['prefix'=>'admin','as'=>'admin.'], function(){
    // Route::get('/productos', [App\Http\Controllers\Admin\ProductosController::class,'index']);
 
     Route::get('/productos', 'Admin\ProductosController@index');
+    Route::post('/productos/edit', 'Admin\ProductosController@edit');
     Route::resource('productos', 'Admin\ProductosController');
 
 });
