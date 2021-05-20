@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix'=>'admin','as'=>'admin.'], function(){
     Route::get('/', function () {
+        
         return view('admin.index');
     });
     Route::get('/usuarios', function () {
@@ -40,3 +41,7 @@ Route::get('/producto/{id}', function ($id) {
 Route::get('/practica', function(){
     return view('prac');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
